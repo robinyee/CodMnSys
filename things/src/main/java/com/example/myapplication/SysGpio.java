@@ -453,13 +453,13 @@ public class SysGpio {
             //注射泵1状态正常时执行
             if(SysData.Pump[1] == 0x00) {
                 //注射泵抽取液体
-                MainActivity.com0.pumpCmd(1, "turn", 30);
-                Thread.sleep(15000);
+                MainActivity.com0.pumpCmd(1, "turn", 60);
+                Thread.sleep(30000);
             }
             //注射泵状态查询
             pumpStatus(1, 1000);
             SysGpio.mGpioOutD8.setValue(true);  //开启排空阀排空反应器和管路中的液体
-            Thread.sleep(30000);  //等待30秒，排空反应器液体
+            Thread.sleep(60000);  //等待60秒，排空反应器液体
             SysGpio.mGpioOutD8.setValue(false);  //关闭排空阀排开始进水样
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -1122,7 +1122,8 @@ public class SysGpio {
                         }
                         sma.addNewNumber(SysData.adLight);
                         SysData.smaAdLight = sma.getMovingAverage();
-                        SysData.startAdLight = (SysData.adLight > SysData.startAdLight) ? SysData.adLight : SysData.startAdLight;  //初始光电值取最大值
+                        //SysData.startAdLight = (SysData.adLight > SysData.startAdLight) ? SysData.adLight : SysData.startAdLight;  //初始光电值取最大值
+                        SysData.startAdLight = (SysData.smaAdLight > SysData.startAdLight) ? (int)(SysData.smaAdLight) : SysData.startAdLight;  //滑动平均值大于初始光电值，取滑动平均值为初始值
                         SysGpio.readTempFlag = false;  //停止循环读取温度
                     } while (!isEnd && (SysData.startAdLight - SysData.adLight) < SysData.didingDifference && SysData.didingNum < SysData.didingMax);     //最多滴定didingMax滴
 
@@ -1273,7 +1274,9 @@ public class SysGpio {
                     SysGpio.mGpioOutP1.setValue(true);
                     SysGpio.mGpioOutP2.setValue(true);
                     SysGpio.mGpioOutP3.setValue(true);
-                } catch (IOException e) {
+                    Thread.sleep(1000);
+                    SysGpio.pumpStart();
+                } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
                 }
 

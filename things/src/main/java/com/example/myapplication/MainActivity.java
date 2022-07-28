@@ -140,8 +140,9 @@ public class MainActivity extends AppCompatActivity {
 
         //前次正在测试中断电，自动复位
         if (SysData.isRun) {
-            SysGpio.s8_Reset();
+            // SysGpio.s8_Reset();
             SysData.progressRate = 0;
+            SysData.isRun = false;
         }
 
         //启动循环进程定时保存仪表状态信息
@@ -751,7 +752,8 @@ public class MainActivity extends AppCompatActivity {
                                 SysData.saveAlertToDB();  //保存报警记录
                             }
                             if(SysGpio.statusS8 != true) {
-                                SysGpio.s8_Reset();  //仪表复位，保护反应器
+                                // SysGpio.s8_Reset();  //仪表复位，保护反应器
+                                SysGpio.s12_Stop();  //仪表紧急停止
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
