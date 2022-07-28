@@ -453,7 +453,7 @@ public class SysGpio {
             //注射泵1状态正常时执行
             if(SysData.Pump[1] == 0x00) {
                 //注射泵抽取液体
-                MainActivity.com0.pumpCmd(1, "turn", 60);
+                MainActivity.com0.pumpCmd(1, "turn", 60);  // 润洗的进样量
                 Thread.sleep(30000);
             }
             //注射泵状态查询
