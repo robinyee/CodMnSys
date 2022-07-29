@@ -682,6 +682,13 @@ public class WebSockets extends NanoWSD {
                             line.put("系数", calibration.coefficient);
                             line.put("草酸钠", calibration.csnValue);
                             line.put("高锰酸钾", calibration.gmsjValue);
+                            String result = "";
+                            if(calibration.gmsjValue >= SysData.calibrationMin && calibration.gmsjValue <= SysData.calibrationMax){
+                                result = "成功";
+                            }else {
+                                result = "失败";
+                            }
+                            line.put("校准结果", result);
                             listObjects.add(line);
                         }
                     }

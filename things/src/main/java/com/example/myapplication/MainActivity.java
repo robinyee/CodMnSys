@@ -164,12 +164,15 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        //注射泵初始化
-        SysGpio.pumpStart();
-
         //打开出口通讯
         openCom();
 
+        //注射泵初始化
+        SysData.resetP2 = true;
+        SysData.resetP3 = true;
+        SysGpio.pumpStart();
+        SysData.resetP2 = false;
+        SysData.resetP3 = false;
     }
 
     //程序退出时关闭资源
@@ -741,8 +744,8 @@ public class MainActivity extends AppCompatActivity {
                             SysData.saveAlertToDB();  //保存报警记录
                         }
                     }
-                    //加热器温度大于160度，反应器内温度高于110度，停止加热并报警
-                    if(SysData.tempOut > 160 || SysData.tempIn > 110) {
+                    //加热器温度大于150度，反应器内温度高于110度，停止加热并报警
+                    if(SysData.tempOut > 150 || SysData.tempIn > 110) {
                         try {
                             SysGpio.mGpioOutH1.setValue(false);
                             Log.d(TAG, "run: 停止加热");

@@ -534,10 +534,17 @@ public class TabData extends Fragment {
         }
         if(SysData.listDataType.equals("calibration")) {
             if (SysData.calibrations != null && !SysData.calibrations.isEmpty()) {
-                listData.add("序号\t\t时间\t\t\t\t\t原值\t\t滴定量\t\tK值\t\t新值");
+                listData.add("序号\t\t时间\t\t\t\t\t原值\t\t滴定量\t\tK值\t\t新值\t\t结果");
                 for (Calibration calibration : SysData.calibrations) {
+                    String result = "";
+                    if(calibration.gmsjValue >= SysData.calibrationMin && calibration.gmsjValue <= SysData.calibrationMax){
+                        result = "成功";
+                    }else {
+                        result = "失败";
+                    }
                     listData.add(calibration.cid + "\t\t" + dateFormat.format(calibration.dateTime) + "\t\t" +
-                            calibration.byValue + "\t\t" + calibration.gmsjValue + "\t\t" + calibration.coefficient + "\t\t" + calibration.newValue);
+                            calibration.byValue + "\t\t" + calibration.gmsjValue + "\t\t" +
+                            calibration.coefficient + "\t\t" + calibration.newValue + "\t\t" + result);
                 }
                 String[] stringData = listData.toArray(new String[0]);
                 listview.setAdapter(new DataAdapter(view.getContext(), stringData));

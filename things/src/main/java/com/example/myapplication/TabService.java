@@ -258,9 +258,9 @@ public class TabService extends Fragment {
                     if(aSwitchP1.isChecked()) {
                         Thread.sleep(1000);
                         MainActivity.com0.pumpInit(1);
-                        Thread.sleep(1000);
+                        //Thread.sleep(1000);
                         //注射泵初始化
-                        SysGpio.pumpStart();
+                        //SysGpio.pumpStart();
                     }
                 } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
@@ -279,7 +279,10 @@ public class TabService extends Fragment {
                         MainActivity.com0.pumpInit(2);
                         Thread.sleep(1000);
                         //注射泵初始化
+                        SysData.resetP2 = true;
                         SysGpio.pumpStart();
+                    }else{
+                        SysData.resetP2 = false;
                     }
                 } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
@@ -298,7 +301,10 @@ public class TabService extends Fragment {
                         MainActivity.com0.pumpInit(3);
                         Thread.sleep(1000);
                         //注射泵初始化
+                        SysData.resetP3 = true;
                         SysGpio.pumpStart();
+                    }else{
+                        SysData.resetP3 = false;
                     }
                 } catch (IOException | InterruptedException e) {
                     e.printStackTrace();

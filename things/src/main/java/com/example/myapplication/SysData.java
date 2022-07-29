@@ -41,6 +41,9 @@ public class SysData {
     static double originalValue = 0;            //校准前的cod值
     static double newValue = 0;                 //校准后的cod值
     static double coefficient = 1.0;            //标定系数K值
+    static double calibrationMin= 9.5;          //标定最小滴定值
+    static double calibrationMax= 11.0;         //标定最大滴定值
+    static boolean calibrationResult = true;    //校准结果
     static double ccf = 1.0;                    //浓度修正因子，0.01浓度值为1.0，0.025浓度值为0.97
     static double slopeA = 1.0;                 //斜率
     static double interceptB = 0;               //截距
@@ -69,7 +72,10 @@ public class SysData {
     static String workFrom = "未知";            //启动分析命令来自于 触摸屏、串口、Web、定时启动
     static double tempBox;                      //主板温度 DS3231芯片温度
     static int ds3231Error = 0;                 //访问芯片DS3231出错的次数
-    static boolean isSaveLog = false;            //是否保存运行日志
+    static boolean isSaveLog = false;           //是否保存运行日志
+    static boolean resetP2 = false;             //是否复位P2注射泵
+    static boolean resetP3 = false;             //是否复位P3注射泵
+
 
     //系统参数
     static String httpAddr = "";                //http访问地址
@@ -180,12 +186,18 @@ public class SysData {
         double orgDidingVolume = didingSumVolume;
         didingSumVolume = didingNum * didingVolume;
         didingSumVolume = (double)Math.round(didingSumVolume*100)/100;  //取小数点后两位
-        biaodingValue = didingSumVolume;
-        coefficient = caosuannaVolume / didingSumVolume;
-        originalValue = ((gaomengsuanjiaVolume + orgDidingVolume) * 1 - caosuannaVolume) * caosuannaCon * 8 * 1000 / shuiyangVolume;
-        originalValue = (double)Math.round(originalValue*100)/100;  //取小数点后两位
-        newValue = ((gaomengsuanjiaVolume + orgDidingVolume) * coefficient - caosuannaVolume) * caosuannaCon * 8 * 1000 / shuiyangVolume;
-        newValue = (double)Math.round(newValue*100)/100;  //取小数点后两位
+        if(didingSumVolume >= calibrationMin && didingSumVolume <= calibrationMax) {
+            biaodingValue = didingSumVolume;
+            coefficient = caosuannaVolume / didingSumVolume;
+            originalValue = ((gaomengsuanjiaVolume + orgDidingVolume) * 1 - caosuannaVolume) * caosuannaCon * 8 * 1000 / shuiyangVolume;
+            originalValue = (double) Math.round(originalValue * 100) / 100;  //取小数点后两位
+            newValue = ((gaomengsuanjiaVolume + orgDidingVolume) * coefficient - caosuannaVolume) * caosuannaCon * 8 * 1000 / shuiyangVolume;
+            newValue = (double) Math.round(newValue * 100) / 100;  //取小数点后两位
+            calibrationResult = true;
+        }else {
+            newValue = codValue;
+            calibrationResult = false;
+        }
         return newValue;
     }
 

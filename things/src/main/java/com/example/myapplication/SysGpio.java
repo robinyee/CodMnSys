@@ -459,7 +459,7 @@ public class SysGpio {
             //注射泵状态查询
             pumpStatus(1, 1000);
             SysGpio.mGpioOutD8.setValue(true);  //开启排空阀排空反应器和管路中的液体
-            Thread.sleep(60000);  //等待60秒，排空反应器液体
+            Thread.sleep(90000);  //等待90秒，排空反应器液体
             SysGpio.mGpioOutD8.setValue(false);  //关闭排空阀排开始进水样
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -1764,7 +1764,7 @@ public class SysGpio {
                 //启动排水
                 try {
                     SysGpio.mGpioOutD8.setValue(true);
-                    Thread.sleep(60000);
+                    Thread.sleep(90000);
                     SysGpio.mGpioOutD8.setValue(false);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -2102,24 +2102,51 @@ public class SysGpio {
             public void run() {
                 try {
                     Log.d(TAG, "run: 注射泵初始化");
-                    SysGpio.mGpioOutP2.setValue(true);
-                    SysGpio.mGpioOutP3.setValue(true);
-                    Thread.sleep(3000);
-                    pumpStatus(2, 1000); //注射泵2状态查询
-                    if(SysData.Pump[2] == 0x00) {
-                        //注射泵返回0位
-                        MainActivity.com0.pumpCmd(2, "back", 0);     //注射泵2返回0位
-                        Thread.sleep(1000);
+                    boolean offPowerP2 = false;
+                    boolean offPowerP3 = false;
+
+                    //注射泵P2复位
+                    if(SysData.resetP2) {
+                        if (!SysGpio.mGpioOutP2.getValue()) {
+                            SysGpio.mGpioOutP2.setValue(true);
+                            Thread.sleep(3000);
+                            offPowerP2 = true;
+                        }
+                        pumpStatus(2, 1000); //注射泵2状态查询
+                        if (SysData.Pump[2] == 0x00) {
+                            //注射泵返回0位
+                            MainActivity.com0.pumpCmd(2, "back", 0);     //注射泵2返回0位
+                            Thread.sleep(1000);
+                        }
+                        SysData.resetP2 = false;
                     }
-                    pumpStatus(3, 1000); //注射泵3状态查询
-                    if(SysData.Pump[3] == 0x00) {
-                        //注射泵返回0位
-                        MainActivity.com0.pumpCmd(3, "back", 0);     //注射泵3返回0位
-                        Thread.sleep(1000);
+
+                    //注射泵P3复位
+                    if(SysData.resetP3) {
+                        if (!SysGpio.mGpioOutP3.getValue()) {
+                            SysGpio.mGpioOutP3.setValue(true);
+                            Thread.sleep(3000);
+                            offPowerP3 = true;
+                        }
+                        pumpStatus(3, 1000); //注射泵3状态查询
+                        if (SysData.Pump[3] == 0x00) {
+                            //注射泵返回0位
+                            MainActivity.com0.pumpCmd(3, "back", 0);     //注射泵3返回0位
+                            Thread.sleep(1000);
+                        }
+                        SysData.resetP3 = false;
                     }
-                    Thread.sleep(30000);
-                    SysGpio.mGpioOutP2.setValue(false);
-                    SysGpio.mGpioOutP3.setValue(false);
+
+                    //关闭电源
+                    if(offPowerP2 || offPowerP3){
+                        Thread.sleep(30000);
+                    }
+                    if(offPowerP2){
+                        SysGpio.mGpioOutP2.setValue(false);
+                    }
+                    if(offPowerP3){
+                        SysGpio.mGpioOutP3.setValue(false);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
