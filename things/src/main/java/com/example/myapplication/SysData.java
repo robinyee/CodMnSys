@@ -148,7 +148,7 @@ public class SysData {
     public static double calculationValue() {
         //不同试剂浓度影响因子
         if(caosuannaCon == 0.025) {
-            ccf = 1.00;    //0.025浓度的试剂修正值
+            ccf = 0.975;    //0.025浓度的试剂修正值
         } else {
             ccf = 1.00;    //0.01浓度的试剂修正值
         }
@@ -186,15 +186,19 @@ public class SysData {
         double orgDidingVolume = didingSumVolume;
         didingSumVolume = didingNum * didingVolume;
         didingSumVolume = (double)Math.round(didingSumVolume*100)/100;  //取小数点后两位
+        originalValue = ((gaomengsuanjiaVolume + orgDidingVolume) * 1 - caosuannaVolume) * caosuannaCon * 8 * 1000 / shuiyangVolume;
+        originalValue = (double) Math.round(originalValue * 100) / 100;  //取小数点后两位
         if(didingSumVolume >= calibrationMin && didingSumVolume <= calibrationMax) {
             biaodingValue = didingSumVolume;
             coefficient = caosuannaVolume / didingSumVolume;
-            originalValue = ((gaomengsuanjiaVolume + orgDidingVolume) * 1 - caosuannaVolume) * caosuannaCon * 8 * 1000 / shuiyangVolume;
-            originalValue = (double) Math.round(originalValue * 100) / 100;  //取小数点后两位
+            // originalValue = ((gaomengsuanjiaVolume + orgDidingVolume) * 1 - caosuannaVolume) * caosuannaCon * 8 * 1000 / shuiyangVolume;
+            // originalValue = (double) Math.round(originalValue * 100) / 100;  //取小数点后两位
             newValue = ((gaomengsuanjiaVolume + orgDidingVolume) * coefficient - caosuannaVolume) * caosuannaCon * 8 * 1000 / shuiyangVolume;
             newValue = (double) Math.round(newValue * 100) / 100;  //取小数点后两位
             calibrationResult = true;
         }else {
+            // originalValue = ((gaomengsuanjiaVolume + orgDidingVolume) * 1 - caosuannaVolume) * caosuannaCon * 8 * 1000 / shuiyangVolume;
+            // originalValue = (double) Math.round(originalValue * 100) / 100;  //取小数点后两位
             newValue = codValue;
             calibrationResult = false;
         }
